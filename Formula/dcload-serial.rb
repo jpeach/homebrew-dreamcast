@@ -1,9 +1,8 @@
 class DcloadSerial < Formula
   desc "Host side of the dcload Sega Dreamcast serial loader"
   homepage "https://github.com/KallistiOS/dcload-serial"
-  url "https://github.com/KallistiOS/dcload-serial.git", :revision => "95628f1"
+  url "https://github.com/KallistiOS/dcload-serial.git", revision: "95628f1"
   version "1.0.6"
-  sha256 ""
   license "GPL-2.0-or-later"
 
   depends_on "libelf"

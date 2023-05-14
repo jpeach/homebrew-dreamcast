@@ -32,6 +32,7 @@ table:
 
 .PHONY: check
 check:
-	@brew audit --tap jpeach/dreamcast
+	@brew style jpeach/dreamcast
+	@brew audit --display-filename --tap=jpeach/dreamcast
 
 # vim: set noet ts=8 sw=8 :
