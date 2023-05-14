@@ -1,7 +1,7 @@
 class ${FORMULA_NAME} < Formula
   desc "Dreamcast compilation toolchain ($CONFIG_NAME)"
   homepage "https://github.com/KallistiOS/KallistiOS/tree/master/utils/dc-chain"
-  url "https://github.com/KallistiOS/KallistiOS.git", :revision => "fb1d7ec"
+  url "https://github.com/KallistiOS/KallistiOS.git", revision: "fb1d7ec"
   version "2022.05.10"
   sha256 ""
   license "BSD-3-Clause"
@@ -11,9 +11,8 @@ class ${FORMULA_NAME} < Formula
   depends_on "libelf" => [:build]
   depends_on "xz" => [:build]
 
-  uses_from_macos "curl"
   uses_from_macos "bzip2"
-  uses_from_macos "tar"
+  uses_from_macos "curl"
   uses_from_macos "make"
 
   def install

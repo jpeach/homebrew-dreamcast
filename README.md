@@ -12,11 +12,11 @@ This tap contains the following formulae:
 
 | Name | Description |
 | --- | --- |
-| [cdirip](./Formula/cdirip.rb) | cdirip is a program for extracting all the tracks contained in a CDI (DiscJuggler) image. |
+| [cdirip](./Formula/cdirip.rb) | A program for extracting tracks from a CDI (DiscJuggler) image |
 | [dc-toolchain-legacy](./Formula/dc-toolchain-legacy.rb) | Dreamcast compilation toolchain (legacy) |
 | [dc-toolchain-stable](./Formula/dc-toolchain-stable.rb) | Dreamcast compilation toolchain (stable) |
 | [dc-toolchain-testing](./Formula/dc-toolchain-testing.rb) | Dreamcast compilation toolchain (testing) |
-| [dcload-serial](./Formula/dcload-serial.rb) | dcload-serial is the host side of the dcload Sega Dreamcast serial loader. |
+| [dcload-serial](./Formula/dcload-serial.rb) | Host side of the dcload Sega Dreamcast serial loader |
 
 For general Homebrew usage, see `brew help`, `man brew` or check [Homebrew's documentation](https://docs.brew.sh).
 

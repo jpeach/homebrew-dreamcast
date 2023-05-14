@@ -1,5 +1,5 @@
 class DcloadSerial < Formula
-  desc "dcload-serial is the host side of the dcload Sega Dreamcast serial loader."
+  desc "Host side of the dcload Sega Dreamcast serial loader"
   homepage "https://github.com/KallistiOS/dcload-serial"
   url "https://github.com/KallistiOS/dcload-serial.git", :revision => "95628f1"
   version "1.0.6"

@@ -1,7 +1,7 @@
 class DcToolchainTesting < Formula
   desc "Dreamcast compilation toolchain (testing)"
   homepage "https://github.com/KallistiOS/KallistiOS/tree/master/utils/dc-chain"
-  url "https://github.com/KallistiOS/KallistiOS.git", :revision => "fb1d7ec"
+  url "https://github.com/KallistiOS/KallistiOS.git", revision: "fb1d7ec"
   version "2022.05.10"
   sha256 ""
   license "BSD-3-Clause"
@@ -11,9 +11,8 @@ class DcToolchainTesting < Formula
   depends_on "libelf" => [:build]
   depends_on "xz" => [:build]
 
-  uses_from_macos "curl"
   uses_from_macos "bzip2"
-  uses_from_macos "tar"
+  uses_from_macos "curl"
   uses_from_macos "make"
 
   def install
@@ -24,7 +23,7 @@ class DcToolchainTesting < Formula
         s.gsub! /^#?force_downloader=.*/, "force_downloader=curl" # macOS already has curl
         s.gsub! /^#?download_protocol=.*/, "download_protocol=https" # macOS already has curl
         s.gsub! /^#?pass2_languages=.*/, "pass2_languages=c,c++" # Most users only need C and C++, not Objective-C
-        #s.gsub! /^#?makejobs=.*/, "makejobs=-j#{Etc.nprocessors}"
+        # The dc-chain build system isn't parallel-safe, at all.
         s.gsub! /^#?makejobs=.*/, "makejobs="
         s.gsub! /^#?toolchains_base=.*/, "toolchains_base=#{prefix}"
         s.gsub! /^#?install_mode=.*/, "install_mode=install-strip"
@@ -47,7 +46,8 @@ class DcToolchainTesting < Formula
 
       system "cat", "config.mk"
 
-      ENV.deparallelize # Parallel make jobs breaks the scaffolding.
+      # The dc-chain build system isn't parallel-safe, at all.
+      ENV.deparallelize
 
       system "./download.sh"
       system "./unpack.sh"

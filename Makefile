@@ -21,11 +21,17 @@ rebuild:
 
 .PHONY: table
 table:
+	@printf '| Name | Description |\n'
+	@printf '| --- | --- |\n'
 	@brew tap-info --json jpeach/dreamcast  | jq -r '.[] | .formula_names | .[]' | sort | \
 	while read name; do \
 		desc=`brew info --json "$$name" | jq -r '.[] | .desc'` ; \
 		name=`brew info --json "$$name" | jq -r '.[] | .name'` ; \
 		printf '| [%s](./Formula/%s.rb) | %s | \n' "$$name" "$$name" "$$desc" ; \
 	done
+
+.PHONY: check
+check:
+	@brew audit --tap jpeach/dreamcast
 
 # vim: set noet ts=8 sw=8 :
