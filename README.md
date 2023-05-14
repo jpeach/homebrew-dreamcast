@@ -12,7 +12,7 @@ This tap contains the following formulae:
 
 | Name | Description |
 | --- | --- |
-| [cdirip](./Formula/cdirip.rb) | A program for extracting tracks from a CDI (DiscJuggler) image |
+| [cdirip](./Formula/cdirip.rb) | Program for extracting tracks from a CDI (DiscJuggler) image |
 | [dc-toolchain-legacy](./Formula/dc-toolchain-legacy.rb) | Dreamcast compilation toolchain (legacy) |
 | [dc-toolchain-stable](./Formula/dc-toolchain-stable.rb) | Dreamcast compilation toolchain (stable) |
 | [dc-toolchain-testing](./Formula/dc-toolchain-testing.rb) | Dreamcast compilation toolchain (testing) |
