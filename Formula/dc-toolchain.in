@@ -42,15 +42,14 @@ class ${FORMULA_NAME} < Formula
         s.gsub!(/WEB_DOWNLOADER=.*/, "WEB_DOWNLOADER=\"curl --fail --location\"")
       end
 
-      system "cat", "config.mk"
-
       # The dc-chain build system isn't parallel-safe, at all.
       ENV.deparallelize
 
       system "./download.sh"
       system "./unpack.sh"
       system "make", "patch"
-      system "make", "build"
+      system "make", "build-sh4"
+      system "make", "build-arm"
       system "make", "gdb"
     end
 
