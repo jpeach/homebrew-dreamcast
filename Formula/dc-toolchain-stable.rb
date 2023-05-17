@@ -56,6 +56,7 @@ class DcToolchainStable < Formula
     # Generate a script that can be sourced to set the environment
     # variables that the KallistiOS build system needs to use this
     # toolchain.
+    ohai "Writing KallistiOS toolchain variables to #{prefix}/kos.env"
     (prefix/"kos.env").write <<~EOF
       export KOS_CC_BASE="#{prefix}/sh-elf"
       export KOS_CC_PREFIX="sh-elf"
