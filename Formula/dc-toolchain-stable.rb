@@ -1,10 +1,10 @@
 class DcToolchainStable < Formula
   desc "Dreamcast compilation toolchain (stable)"
   homepage "https://github.com/KallistiOS/KallistiOS/tree/master/utils/dc-chain"
-  url "https://github.com/KallistiOS/KallistiOS.git", revision: "fb1d7ec"
-  version "2022.05.10"
+  url "https://github.com/KallistiOS/KallistiOS/archive/fb1d7ec.tar.gz"
+  version "2023.05.21"
+  sha256 "af1965f891559eda2ffa85484d71b871820b248b21b97043410eca5aef43b5dd"
   license "BSD-3-Clause"
-
   keg_only "it conflicts with other compilation toolchains"
 
   depends_on "libelf" => [:build]
@@ -12,7 +12,18 @@ class DcToolchainStable < Formula
 
   uses_from_macos "bzip2"
   uses_from_macos "curl"
-
+  resource "newlib-3.3.0.tar.gz" do
+    url "sourceware.org/pub/newlib/newlib-3.3.0.tar.gz"
+  end
+  resource "gcc-9.3.0.tar.xz" do
+    url "ftp.gnu.org/gnu/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz"
+  end
+  resource "binutils-2.34.tar.xz" do
+    url "ftp.gnu.org/gnu/binutils/binutils-2.34.tar.xz"
+  end
+  resource "gcc-8.4.0.tar.xz" do
+    url "ftp.gnu.org/gnu/gcc/gcc-8.4.0/gcc-8.4.0.tar.xz"
+  end
   def install
     Dir.chdir("utils/dc-chain") do
       File.rename("config.mk.stable.sample", "config.mk")
@@ -36,7 +47,7 @@ class DcToolchainStable < Formula
       end
 
       # The download script assumes exact character counts
-      # to edit the command. We chanced that in the `curl_cmd`
+      # to edit the command. We changed that in the "curl_cmd"
       # edit above, so clobber it to fix it up.
       inreplace "download.sh" do |s|
         s.gsub!(/WEB_DOWNLOADER=.*/, "WEB_DOWNLOADER=\"curl --fail --location\"")
@@ -45,8 +56,20 @@ class DcToolchainStable < Formula
       # The dc-chain build system isn't parallel-safe, at all.
       ENV.deparallelize
 
+      # Use private Homebrew API to copy the artifacts out of the download
+      # cache. The unpack script needs this because it always deletes the
+      # output directoty and extract the archives again.
+      resources.each do |r|
+        cp r.cached_download, buildpath/"utils/dc-chain/#{r.name}"
+      end
+
+      # We don't guarantee to download everything that the build needs, so let
+      # the download script check for more artifacts.
       system "./download.sh"
+
+      # Unpack both extracts the archives, and downloads GCC prerequisites.
       system "./unpack.sh"
+
       system "make", "patch"
       system "make", "build-sh4"
       system "make", "build-arm"

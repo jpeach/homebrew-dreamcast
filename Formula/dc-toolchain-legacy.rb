@@ -1,10 +1,10 @@
 class DcToolchainLegacy < Formula
   desc "Dreamcast compilation toolchain (legacy)"
   homepage "https://github.com/KallistiOS/KallistiOS/tree/master/utils/dc-chain"
-  url "https://github.com/KallistiOS/KallistiOS.git", revision: "fb1d7ec"
-  version "2022.05.10"
+  url "https://github.com/KallistiOS/KallistiOS/archive/fb1d7ec.tar.gz"
+  version "2023.05.21"
+  sha256 "af1965f891559eda2ffa85484d71b871820b248b21b97043410eca5aef43b5dd"
   license "BSD-3-Clause"
-
   keg_only "it conflicts with other compilation toolchains"
 
   depends_on "libelf" => [:build]
@@ -12,7 +12,15 @@ class DcToolchainLegacy < Formula
 
   uses_from_macos "bzip2"
   uses_from_macos "curl"
-
+  resource "binutils-2.34.tar.xz" do
+    url "ftp.gnu.org/gnu/binutils/binutils-2.34.tar.xz"
+  end
+  resource "newlib-2.0.0.tar.gz" do
+    url "sourceware.org/pub/newlib/newlib-2.0.0.tar.gz"
+  end
+  resource "gcc-4.7.4.tar.bz2" do
+    url "ftp.gnu.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2"
+  end
   def install
     Dir.chdir("utils/dc-chain") do
       File.rename("config.mk.legacy.sample", "config.mk")
@@ -36,7 +44,7 @@ class DcToolchainLegacy < Formula
       end
 
       # The download script assumes exact character counts
-      # to edit the command. We chanced that in the `curl_cmd`
+      # to edit the command. We changed that in the "curl_cmd"
       # edit above, so clobber it to fix it up.
       inreplace "download.sh" do |s|
         s.gsub!(/WEB_DOWNLOADER=.*/, "WEB_DOWNLOADER=\"curl --fail --location\"")
@@ -45,8 +53,20 @@ class DcToolchainLegacy < Formula
       # The dc-chain build system isn't parallel-safe, at all.
       ENV.deparallelize
 
+      # Use private Homebrew API to copy the artifacts out of the download
+      # cache. The unpack script needs this because it always deletes the
+      # output directoty and extract the archives again.
+      resources.each do |r|
+        cp r.cached_download, buildpath/"utils/dc-chain/#{r.name}"
+      end
+
+      # We don't guarantee to download everything that the build needs, so let
+      # the download script check for more artifacts.
       system "./download.sh"
+
+      # Unpack both extracts the archives, and downloads GCC prerequisites.
       system "./unpack.sh"
+
       system "make", "patch"
       system "make", "build-sh4"
       system "make", "build-arm"

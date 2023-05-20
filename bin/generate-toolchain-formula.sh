@@ -1,9 +1,44 @@
-class DcToolchainTesting < Formula
-  desc "Dreamcast compilation toolchain (testing)"
+#! /usr/bin/env bash
+# shellcheck disable=SC1039
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+WORKDIR="$(mktemp -d)"
+readonly WORKDIR
+
+# KallistiOS git revision.
+readonly REVISION="fb1d7ec"
+
+# Formula version.
+VERSION=$(date +"%Y.%m.%d")
+readonly VERSION
+
+KOS_ARCHIVE_SHA=
+KOS_ARCHIVE_URL=https://github.com/KallistiOS/KallistiOS/archive/${REVISION}.tar.gz
+
+echo "Fetching ${KOS_ARCHIVE_URL}" 1>&2
+curl --location --fail -# -o "${WORKDIR}/kos.tgz" "${KOS_ARCHIVE_URL}"
+
+KOS_ARCHIVE_SHA=$(sha256sum "${WORKDIR}/kos.tgz" | awk '{print $1}')
+readonly KOS_ARCHIVE_SHA KOS_ARCHIVE_URL
+
+# NOTE: assumes GNU tar.
+tar --strip-components=1 --directory="${WORKDIR}" -xzf "${WORKDIR}/kos.tgz"
+
+for variant in "testing" "stable" "legacy" ; do
+  echo "Writing Formula/dc-toolchain-${variant}.rb" 1>&2
+
+  exec >"Formula/dc-toolchain-${variant}.rb"
+
+  cat <<EOF
+class DcToolchain${variant^} < Formula
+  desc "Dreamcast compilation toolchain (${variant})"
   homepage "https://github.com/KallistiOS/KallistiOS/tree/master/utils/dc-chain"
-  url "https://github.com/KallistiOS/KallistiOS/archive/fb1d7ec.tar.gz"
-  version "2023.05.21"
-  sha256 "af1965f891559eda2ffa85484d71b871820b248b21b97043410eca5aef43b5dd"
+  url "${KOS_ARCHIVE_URL}"
+  version "${VERSION}"
+  sha256 "${KOS_ARCHIVE_SHA}"
   license "BSD-3-Clause"
   keg_only "it conflicts with other compilation toolchains"
 
@@ -12,21 +47,40 @@ class DcToolchainTesting < Formula
 
   uses_from_macos "bzip2"
   uses_from_macos "curl"
-  resource "newlib-4.3.0.20230120.tar.gz" do
-    url "sourceware.org/pub/newlib/newlib-4.3.0.20230120.tar.gz"
+EOF
+
+
+  # Generate a resources fragment for this variant.
+  (
+    cd "${WORKDIR}/utils/dc-chain"
+
+    ln -sf config.mk.${variant}.sample config.mk
+
+    # shellcheck disable=SC1091
+    source scripts/common.sh > /dev/null
+
+    # Hash of name to URL, for deduplication.
+    declare -A resources
+
+    for prefix in "SH_BINUTILS" "SH_GCC" "NEWLIB" "ARM_BINUTILS" "ARM_GCC" ; do
+      url="${prefix}_TARBALL_URL"
+      filename=$(basename "${!url}")
+      resources["${filename}"]="${!url}"
+    done
+
+    for r in "${!resources[@]}" ; do
+      cat <<EOF
+  resource "${r}" do
+    url "${resources[$r]}"
   end
-  resource "gcc-13.1.0.tar.xz" do
-    url "ftp.gnu.org/gnu/gcc/gcc-13.1.0/gcc-13.1.0.tar.xz"
-  end
-  resource "gcc-8.5.0.tar.xz" do
-    url "ftp.gnu.org/gnu/gcc/gcc-8.5.0/gcc-8.5.0.tar.xz"
-  end
-  resource "binutils-2.40.tar.xz" do
-    url "ftp.gnu.org/gnu/binutils/binutils-2.40.tar.xz"
-  end
+EOF
+    done
+  )
+
+  cat <<EOF
   def install
     Dir.chdir("utils/dc-chain") do
-      File.rename("config.mk.testing.sample", "config.mk")
+      File.rename("config.mk.${variant}.sample", "config.mk")
 
       inreplace "config.mk" do |s|
         s.gsub!(/^#?force_downloader=.*/, "force_downloader=curl") # macOS already has curl
@@ -80,6 +134,7 @@ class DcToolchainTesting < Formula
     # variables that the KallistiOS build system needs to use this
     # toolchain.
     ohai "Writing KallistiOS toolchain variables to #{prefix}/kos.env"
+
     (prefix/"kos.env").write <<~EOF
       export KOS_CC_BASE="#{prefix}/sh-elf"
       export KOS_CC_PREFIX="sh-elf"
@@ -95,3 +150,6 @@ class DcToolchainTesting < Formula
 end
 
 # vim: set ft=ruby :
+EOF
+
+done

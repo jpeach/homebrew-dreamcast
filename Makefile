@@ -5,14 +5,8 @@ TOOLCHAINS := \
 
 all: $(TOOLCHAINS)
 
-Envsubst = envsubst '$$FORMULA_NAME $$CONFIG_NAME' < $^ > $@
-
-Formula/dc-toolchain-stable.rb: Formula/dc-toolchain.in
-	env FORMULA_NAME=DcToolchainStable CONFIG_NAME=stable $(Envsubst)
-Formula/dc-toolchain-legacy.rb: Formula/dc-toolchain.in
-	env FORMULA_NAME=DcToolchainLegacy CONFIG_NAME=legacy $(Envsubst)
-Formula/dc-toolchain-testing.rb: Formula/dc-toolchain.in
-	env FORMULA_NAME=DcToolchainTesting CONFIG_NAME=testing $(Envsubst)
+$(TOOLCHAINS): ./bin/generate-toolchain-formula.sh
+	./bin/generate-toolchain-formula.sh
 
 .PHONY: rebuild
 rebuild:
@@ -32,6 +26,7 @@ table:
 
 .PHONY: check
 check:
+	@shellcheck bin/*
 	@brew style jpeach/dreamcast
 	@brew audit --display-filename --tap=jpeach/dreamcast
 
