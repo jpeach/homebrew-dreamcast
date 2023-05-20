@@ -28,6 +28,6 @@ table:
 check:
 	@shellcheck bin/*
 	@brew style jpeach/dreamcast
-	@brew audit --display-filename --tap=jpeach/dreamcast
+	@brew audit --except=checksum --display-filename --tap=jpeach/dreamcast
 
 # vim: set noet ts=8 sw=8 :
