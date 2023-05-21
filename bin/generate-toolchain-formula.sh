@@ -9,10 +9,10 @@ WORKDIR="$(mktemp -d)"
 readonly WORKDIR
 
 # KallistiOS git revision.
-readonly REVISION="fb1d7ec"
+readonly REVISION="308a1bb"
 
-# Formula version.
-VERSION=$(date +"%Y.%m.%d")
+# Formula version, should match date of the Git revision.
+VERSION="2023.05.19"
 readonly VERSION
 
 KOS_ARCHIVE_SHA=
@@ -62,7 +62,7 @@ EOF
     # Hash of name to URL, for deduplication.
     declare -A resources
 
-    for prefix in "SH_BINUTILS" "SH_GCC" "NEWLIB" "ARM_BINUTILS" "ARM_GCC" ; do
+    for prefix in "SH_BINUTILS" "SH_GCC" "NEWLIB" "ARM_BINUTILS" "ARM_GCC" "GDB" ; do
       url="${prefix}_TARBALL_URL"
       filename=$(basename "${!url}")
       resources["${filename}"]="${!url}"
@@ -93,7 +93,7 @@ EOF
       end
 
       inreplace "scripts/common.sh" do |s|
-        s.gsub!(/ftp.gnu.org/, "ftpmirror.gnu.org")
+        s.gsub!(/ftp.gnu.org/, "ftpmirror.gnu.org", audit_result=false)
       end
 
       inreplace "scripts/init.mk" do |s|

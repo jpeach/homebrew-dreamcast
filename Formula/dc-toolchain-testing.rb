@@ -1,9 +1,9 @@
 class DcToolchainTesting < Formula
   desc "Dreamcast compilation toolchain (testing)"
   homepage "https://github.com/KallistiOS/KallistiOS/tree/master/utils/dc-chain"
-  url "https://github.com/KallistiOS/KallistiOS/archive/fb1d7ec.tar.gz"
-  version "2023.05.21"
-  sha256 "af1965f891559eda2ffa85484d71b871820b248b21b97043410eca5aef43b5dd"
+  url "https://github.com/KallistiOS/KallistiOS/archive/308a1bb.tar.gz"
+  version "2023.05.19"
+  sha256 "15e16822f3843b3cd6d4fdc19f898de3c14c7503dfc70bba8899fc7dae6fbba5"
   license "BSD-3-Clause"
   keg_only "it conflicts with other compilation toolchains"
 
@@ -16,13 +16,16 @@ class DcToolchainTesting < Formula
     url "sourceware.org/pub/newlib/newlib-4.3.0.20230120.tar.gz"
   end
   resource "gcc-13.1.0.tar.xz" do
-    url "ftp.gnu.org/gnu/gcc/gcc-13.1.0/gcc-13.1.0.tar.xz"
+    url "ftpmirror.gnu.org/gnu/gcc/gcc-13.1.0/gcc-13.1.0.tar.xz"
   end
   resource "gcc-8.5.0.tar.xz" do
-    url "ftp.gnu.org/gnu/gcc/gcc-8.5.0/gcc-8.5.0.tar.xz"
+    url "ftpmirror.gnu.org/gnu/gcc/gcc-8.5.0/gcc-8.5.0.tar.xz"
   end
   resource "binutils-2.40.tar.xz" do
-    url "ftp.gnu.org/gnu/binutils/binutils-2.40.tar.xz"
+    url "ftpmirror.gnu.org/gnu/binutils/binutils-2.40.tar.xz"
+  end
+  resource "gdb-13.1.tar.xz" do
+    url "ftpmirror.gnu.org/gnu/gdb/gdb-13.1.tar.xz"
   end
   def install
     Dir.chdir("utils/dc-chain") do
@@ -39,7 +42,7 @@ class DcToolchainTesting < Formula
       end
 
       inreplace "scripts/common.sh" do |s|
-        s.gsub!(/ftp.gnu.org/, "ftpmirror.gnu.org")
+        s.gsub!(/ftp.gnu.org/, "ftpmirror.gnu.org", audit_result=false)
       end
 
       inreplace "scripts/init.mk" do |s|
@@ -80,6 +83,7 @@ class DcToolchainTesting < Formula
     # variables that the KallistiOS build system needs to use this
     # toolchain.
     ohai "Writing KallistiOS toolchain variables to #{prefix}/kos.env"
+
     (prefix/"kos.env").write <<~EOF
       export KOS_CC_BASE="#{prefix}/sh-elf"
       export KOS_CC_PREFIX="sh-elf"
