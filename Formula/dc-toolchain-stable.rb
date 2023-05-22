@@ -35,8 +35,9 @@ class DcToolchainStable < Formula
         s.gsub!(/^#?force_downloader=.*/, "force_downloader=curl") # macOS already has curl
         s.gsub!(/^#?download_protocol=.*/, "download_protocol=https") # macOS already has curl
         s.gsub!(/^#?pass2_languages=.*/, "pass2_languages=c,c++") # Most users only need C and C++, not Objective-C
-        # The dc-chain build system isn't parallel-safe, at all.
-        s.gsub!(/^#?makejobs=.*/, "makejobs=")
+        # The dc-chain build system isn't parallel-safe, but the component
+        # builds should be. Use about half the system CPUs to build.
+        s.gsub!(/^#?makejobs=.*/, "makejobs=-j#{(Etc.nprocessors + 1) / 2}")
         s.gsub!(/^#?toolchains_base=.*/, "toolchains_base=#{prefix}")
         s.gsub!(/^#?install_mode=.*/, "install_mode=install-strip")
       end
