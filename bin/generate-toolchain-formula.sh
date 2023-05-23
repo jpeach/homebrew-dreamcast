@@ -94,7 +94,7 @@ EOF
       end
 
       inreplace "scripts/common.sh" do |s|
-        s.gsub!(/ftp.gnu.org/, "ftpmirror.gnu.org", audit_result=false)
+        s.gsub!(/ftp.gnu.org/, "ftpmirror.gnu.org", audit_result: false)
       end
 
       inreplace "scripts/init.mk" do |s|
