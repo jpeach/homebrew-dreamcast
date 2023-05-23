@@ -17,6 +17,7 @@ This tap contains the following formulae:
 | [dc-toolchain-stable](./Formula/dc-toolchain-stable.rb) | Dreamcast compilation toolchain (stable) |
 | [dc-toolchain-testing](./Formula/dc-toolchain-testing.rb) | Dreamcast compilation toolchain (testing) |
 | [dcload-serial](./Formula/dcload-serial.rb) | Host side of the dcload Sega Dreamcast serial loader |
+| [kallistios-utils](./Formula/kallistios-utils.rb) | Host-side Dreamcast build utilities from KallistiOS |
 
 For general Homebrew usage, see `brew help`, `man brew` or check [Homebrew's documentation](https://docs.brew.sh).
 
@@ -34,3 +35,8 @@ KOS_CC_PREFIX=sh-elf
 KOS_CC_BASE=/usr/local/Cellar/dc-toolchain-testing/2022.05.10/sh-elf
 ```
 
+## KallistiOS dependencies
+
+The `kallistios-utils` formula contains the tools needed for building
+romdisks, and they depend on the `$KOS_BASE` and other environment
+variables being set correctly.
